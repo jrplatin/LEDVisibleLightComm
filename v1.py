@@ -4,15 +4,16 @@ import time
 import sys
 
 # Declare portname here
-portname = "COM5"
+portname = "COM4"
 
 # Enter list of commands. No need to end
 # with "\n", it is automatically added.
 commands = [
-    "p",
-    "a[21]",
     "r",
-    "a"
+    "a[02]",
+    "c[1,0,5]",
+    "c[0,1,30]",
+    "m[hello world!\0,FF]"
 ]
 
 ser = serial.Serial(port=portname,baudrate=115200,timeout=1)
@@ -24,6 +25,15 @@ def tSend():
         ser.write(c.rstrip().encode("utf-8"))
         ser.write(b'\n')
         time.sleep(0.1)
+    while not exitflag:
+        user_input = _to_sending_string(input ("Enter something to chat!"))
+        ser.write(user_input.rstrip().encode("utf-8"))
+        ser.write(b'\n')
+        time.sleep(0.1)
+
+def _to_sending_string(str_to_send):
+    return "m[" + str_to_send + "\0,FF]"
+
 
 def tRecv():
     while not exitflag:

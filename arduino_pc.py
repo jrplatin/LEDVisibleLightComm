@@ -1,3 +1,4 @@
+import serial
 s = serial.Serial('COM4',115200,timeout=1) #opens a serial port (resets the device!) time.sleep(2) #give the device some time to startup (2 seconds) 
 
 #write to the device’s serial port 
@@ -15,7 +16,7 @@ while True: #while not terminated
  try: 
    byte = s.read(1) #read one byte (blocks until data available or timeout reached) 
    if byte=='\n': #if termination character reached
-     print message #print message
+     print(message) #print message
      message = "" #reset message
    else:
      message = message + byte #concatenate the message 
