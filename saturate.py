@@ -4,7 +4,7 @@ import time
 import sys
 
 # Declare portname here
-portname = "COM4"
+portname = "COM5"
 
 # Enter list of commands. No need to end
 # with "\n", it is automatically added.
@@ -19,21 +19,26 @@ ser = serial.Serial(port=portname,baudrate=115200,timeout=1)
 exitflag = False
 debugflag = True
 payloadsize = 1
-destaddr = "AA"
+destaddr = "01"
+rdytosend = True
+mutex = threading.Lock()
 
 # Declare all functions that send to the device here
 def tSend():
+    global rdytosend
     for c in commands:
         ser.write(c.rstrip().encode("utf-8"))
         ser.write(b'\n')
         time.sleep(0.1)
     while not exitflag:
-        # user_input = _to_sending_string(input ("Enter something to chat!"))
-        user_input = _to_sending_string("A"*payloadsize)
-        # print("writing")
-        ser.write(user_input.rstrip().encode("utf-8"))
-        ser.write(b'\n')
-        # print("sleeping")
+        if rdytosend:
+            ser.write(_to_sending_string("A"*payloadsize).rstrip().encode("utf-8"))
+            ser.write(b'\n')
+            mutex.acquire()
+            try:
+                rdytosend = False
+            finally:
+                mutex.release()
         time.sleep(0.01)
 
 def _to_sending_string(str_to_send):
@@ -41,14 +46,21 @@ def _to_sending_string(str_to_send):
 
 
 def tRecv():
+    global rdytosend
     while not exitflag:
         try:
             msg = ser.readline().decode("utf-8").rstrip()
             if msg != "" and (msg.startswith("m[R,D")):
                 # print(" >> " + msg)
                 print(msg.split(",")[2][:-1])
-            elif debugflag:
+            elif msg != "" and debugflag:
                 print(msg)
+                if msg == "m[D]":
+                    mutex.acquire()
+                    try:
+                        rdytosend = True
+                    finally:
+                        mutex.release()
         except serial.SerialException:
             continue
 
