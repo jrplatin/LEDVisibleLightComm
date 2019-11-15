@@ -4,7 +4,7 @@ import time
 import sys
 
 # Declare portname here
-portname = "COM4"
+portname = "COM5"
 
 # Enter list of commands. No need to end
 # with "\n", it is automatically added.
@@ -18,6 +18,7 @@ commands = [
 
 ser = serial.Serial(port=portname,baudrate=115200,timeout=1)
 exitflag = False
+debugflag = False
 
 # Declare all functions that send to the device here
 def tSend():
@@ -39,8 +40,9 @@ def tRecv():
     while not exitflag:
         try:
             msg = ser.readline().decode("utf-8").rstrip()
-            if msg != "":
-                print(" >> " + msg)
+            if msg != "" and (msg.startswith("m[R,D") and not debugflag):
+                # print(" >> " + msg)
+                print(msg.split(",")[2][:-1])
         except serial.SerialException:
             continue
 
