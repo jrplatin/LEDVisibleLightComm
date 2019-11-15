@@ -48,7 +48,7 @@ if __name__ == "__main__":
     print("Initialising...")
     time.sleep(2)
     tr = threading.Thread(target=tRecv, daemon=True)
-    ts = threading.Thread(target=tSend)
+    ts = threading.Thread(target=tSend, daemon=True)
     tr.start()
     ts.start()
     print("Waiting...\n")
