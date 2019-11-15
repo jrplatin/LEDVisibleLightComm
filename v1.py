@@ -13,7 +13,6 @@ commands = [
     "a[02]",
     "c[1,0,5]",
     "c[0,1,30]",
-    "m[hello world!\0,FF]"
 ]
 
 ser = serial.Serial(port=portname,baudrate=115200,timeout=1)
