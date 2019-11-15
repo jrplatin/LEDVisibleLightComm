@@ -10,16 +10,14 @@ portname = "COM4"
 # with "\n", it is automatically added.
 commands = [
     "r",
-    "a[AA]",
+    "a[01]",
     "c[1,0,5]",
     "c[0,1,30]",
 ]
 
 ser = serial.Serial(port=portname,baudrate=115200,timeout=1)
 exitflag = False
-debugflag = True
-payloadsize = 1
-destaddr = "AA"
+debugflag = False
 
 # Declare all functions that send to the device here
 def tSend():
@@ -28,27 +26,22 @@ def tSend():
         ser.write(b'\n')
         time.sleep(0.1)
     while not exitflag:
-        # user_input = _to_sending_string(input ("Enter something to chat!"))
-        user_input = _to_sending_string("A"*payloadsize)
-        # print("writing")
+        user_input = _to_sending_string(input ("Enter something to chat: \n"))
         ser.write(user_input.rstrip().encode("utf-8"))
         ser.write(b'\n')
-        # print("sleeping")
-        time.sleep(0.01)
+        time.sleep(0.1)
 
 def _to_sending_string(str_to_send):
-    return "m[" + str_to_send + "\0," + destaddr + "]"
+    return "m[" + str_to_send + "\0,FF]"
 
 
 def tRecv():
     while not exitflag:
         try:
             msg = ser.readline().decode("utf-8").rstrip()
-            if msg != "" and (msg.startswith("m[R,D")):
+            if msg != "" and (msg.startswith("m[R,D") and not debugflag):
                 # print(" >> " + msg)
-                print(msg.split(",")[2][:-1])
-            elif debugflag:
-                print(msg)
+                print("Received: " + msg.split(",")[2][:-1])
         except serial.SerialException:
             continue
 
