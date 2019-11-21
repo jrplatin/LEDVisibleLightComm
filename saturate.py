@@ -4,7 +4,7 @@ import time
 import sys
 
 # Declare portname here
-portname = "COM5"
+portname = "COM4"
 
 # Enter list of commands. No need to end
 # with "\n", it is automatically added.
@@ -39,7 +39,7 @@ def tSend():
                 rdytosend = False
             finally:
                 mutex.release()
-        time.sleep(0.01)
+        time.sleep(0.1)
 
 def _to_sending_string(str_to_send):
     return "m[" + str_to_send + "\0," + destaddr + "]"
