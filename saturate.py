@@ -4,7 +4,7 @@ import time
 import sys
 
 # Declare portname here
-portname = "COM4"
+portname = "COM5"
 
 # Enter list of commands. No need to end
 # with "\n", it is automatically added.
@@ -48,18 +48,19 @@ def tRecv():
     while not exitflag:
         try:
             msg = ser.readline().decode("utf-8").rstrip()
+            # print(msg)
             if msg != "" and (msg.startswith("m[R,D")):
-                print(msg.split(",")[2][:-1])
+                # print(msg.split(",")[2][:-1])
             elif msg != "" and debugflag:
                 if msg == "m[D]":
                     rdytosend = True
                 elif msg.startswith("s[T"):
-                    oldtime = int(msg.split(",")[-2][:-1])
+                    oldtime = int(msg.split(",")[-2])
                     # oldtime = int(round(time.time() * 1000))
                 elif msg.startswith("s[R"):
                     newtime = int(msg.split(",")[-1][:-1])
                     print(newtime - oldtime)
-                    print(str(count) + " " + str(newtime - oldtime))
+                    # print(str(count) + " " + str(newtime - oldtime))
                     count += 1
         except serial.SerialException:
             continue
